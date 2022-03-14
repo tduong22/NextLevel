@@ -2315,7 +2315,21 @@ extension NextLevel {
             }
         }
     }
+    
+    public func zoom(zoom: CGFloat, rate: Float) {
+        if let device = self._currentDevice {
+            do {
+                try device.lockForConfiguration()
 
+                device.ramp(toVideoZoomFactor: CGFloat(zoom), withRate: rate)
+
+                device.unlockForConfiguration()
+            } catch {
+                print("NextLevel, zoomFactor failed to lock device for configuration")
+            }
+        }
+    }
+    
     /// Triggers a photo capture from the last video frame.
     public func capturePhotoFromVideo() {
 
