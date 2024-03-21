@@ -2525,7 +2525,25 @@ extension NextLevel {
             return canCapturePhoto && FileManager.availableStorageSpaceInBytes() > NextLevelRequiredMinimumStorageSpaceInBytes
         }
     }
+    
+    
+    public func capturePhotoBracket()
+    {
+        guard let photoOutput = self._photoOutput, let _ = photoOutput.connection(with: AVMediaType.video) else {
+            return
+        }
+               let exposureValues: [Float] = [-2.0, -0.5, 0.5, 2.0]
+               let makeAutoExposureSettings = AVCaptureAutoExposureBracketedStillImageSettings.autoExposureSettings(exposureTargetBias:)
+               let exposureSettings = exposureValues.map(makeAutoExposureSettings)
+               
+               let photoSettings = AVCapturePhotoBracketSettings(rawPixelFormatType: 0,
+                                                                 processedFormat: [AVVideoCodecKey : AVVideoCodecType.jpeg],
+                                                                 bracketedSettings: exposureSettings)
+               photoSettings.isLensStabilizationEnabled = photoOutput.isLensStabilizationDuringBracketedCaptureSupported
 
+               photoOutput.capturePhoto(with: photoSettings, delegate: self)
+    }
+    
     /// Triggers a photo capture.
     public func capturePhoto() {
         guard let photoOutput = self._photoOutput, let _ = photoOutput.connection(with: AVMediaType.video) else {
